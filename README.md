@@ -29,4 +29,5 @@ mysite.io {
       max_retries 10
     }
   }
+}
 ```
