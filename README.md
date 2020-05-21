@@ -24,15 +24,15 @@ To use this module for the ACME DNS challenge, [configure the ACME issuer in you
 
 ```
 {
-	"module": "acme",
-	"challenges": {
-		"dns": {
-			"provider": {
-				"name": "route53",
-				"max_retries": 10
-			}
-		}
-	}
+  "module": "acme",
+  "challenges": {
+    "dns": {
+      "provider": {
+        "name": "route53",
+        "max_retries": 10
+      }
+    }
+  }
 }
 ```
 
@@ -40,7 +40,7 @@ or with the Caddyfile:
 
 ```
 tls {
-	dns route53 {
+  dns route53 {
     max_retries 10
   }
 }
