@@ -18,16 +18,30 @@ See [the associated README in the libdns package](https://github.com/libdns/rout
 
 To compile this Caddy module, follow the steps describe at the [Caddy Build from Source](https://github.com/caddyserver/caddy#build-from-source) instructions and import the `github.com/caddy-dns/route53` plugin
 
-## Example Caddyfile
+## Config examples
 
-This is a very minimal Caddyfile example using the `caddy-dns/route53` plugin
+To use this module for the ACME DNS challenge, [configure the ACME issuer in your Caddy JSON](https://caddyserver.com/docs/json/apps/tls/automation/policies/issuer/acme/) like so:
 
 ```
-mysite.io {
-  tls myemail@mysite.io {
-    dns route53 {
-      max_retries 10
-    }
+{
+	"module": "acme",
+	"challenges": {
+		"dns": {
+			"provider": {
+				"name": "route53",
+				"max_retries": 10
+			}
+		}
+	}
+}
+```
+
+or with the Caddyfile:
+
+```
+tls {
+	dns route53 {
+    max_retries 10
   }
 }
 ```
