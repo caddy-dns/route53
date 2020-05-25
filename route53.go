@@ -29,9 +29,7 @@ func (Provider) CaddyModule() caddy.ModuleInfo {
 // Provision implements the Provisioner interface to initialize the AWS Client sessions
 func (p *Provider) Provision(ctx caddy.Context) error {
 	// Initialize the AWS client session
-	err := p.NewSession()
-
-	return err
+	return p.NewSession()
 }
 
 // UnmarshalCaddyfile sets up the DNS provider from Caddyfile tokens. Syntax:
