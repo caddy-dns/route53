@@ -21,15 +21,15 @@ func (Provider) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
 		ID: "dns.providers.route53",
 		New: func() caddy.Module {
-			p := &Provider{new(route53.Provider)}
-			// Initialize the AWS client session
-			err := p.NewSession()
-			if err != nil {
-				return nil
-			}
-			return p
+			return &Provider{new(route53.Provider)}
 		},
 	}
+}
+
+// Provision implements the Provisioner interface to initialize the AWS Client sessions
+func (p *Provider) Provision(ctx caddy.Context) error {
+	// Initialize the AWS client session
+	return p.NewSession()
 }
 
 // UnmarshalCaddyfile sets up the DNS provider from Caddyfile tokens. Syntax:
