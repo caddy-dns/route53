@@ -30,7 +30,7 @@ To use this module for the ACME DNS challenge, [configure the ACME issuer in you
       "provider": {
         "name": "route53",
         "max_retries": 10,
-        "aws_profile":"real-profile"
+        "aws_profile": "real-profile"
       }
     }
   }
