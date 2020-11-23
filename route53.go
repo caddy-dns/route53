@@ -55,7 +55,7 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 				}
 			case "aws_profile":
 				if d.NextArg() {
-					p.Provider.AwsProfile = repl.ReplaceAll(d.Val(), "")
+					p.Provider.AWSProfile = repl.ReplaceAll(d.Val(), "")
 				}
 				if d.NextArg() {
 					return d.ArgErr()
