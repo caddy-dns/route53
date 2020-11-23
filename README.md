@@ -29,7 +29,8 @@ To use this module for the ACME DNS challenge, [configure the ACME issuer in you
     "dns": {
       "provider": {
         "name": "route53",
-        "max_retries": 10
+        "max_retries": 10,
+        "aws_profile":"real-profile"
       }
     }
   }
@@ -41,7 +42,8 @@ or with the Caddyfile:
 ```
 tls {
   dns route53 {
-    max_retries 10
+    max_retries 10,
+    aws_profile "real-profile"
   }
 }
 ```
