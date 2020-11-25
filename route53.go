@@ -53,6 +53,13 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 				if d.NextArg() {
 					return d.ArgErr()
 				}
+			case "aws_profile":
+				if d.NextArg() {
+					p.Provider.AWSProfile = repl.ReplaceAll(d.Val(), "")
+				}
+				if d.NextArg() {
+					return d.ArgErr()
+				}
 			default:
 				return d.Errf("unrecognized subdirective '%s'", d.Val())
 			}
