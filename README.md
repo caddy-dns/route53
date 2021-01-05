@@ -22,7 +22,7 @@ To compile this Caddy module, follow the steps describe at the [Caddy Build from
 
 To use this module for the ACME DNS challenge, [configure the ACME issuer in your Caddy JSON](https://caddyserver.com/docs/json/apps/tls/automation/policies/issuer/acme/) like so:
 
-```
+```json
 {
   "module": "acme",
   "challenges": {
