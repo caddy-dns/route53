@@ -28,6 +28,9 @@ func (Provider) CaddyModule() caddy.ModuleInfo {
 
 // Provision implements the Provisioner interface to initialize the AWS Client sessions
 func (p *Provider) Provision(ctx caddy.Context) error {
+	repl := caddy.NewReplacer()
+	p.Provider.AWSProfile = repl.ReplaceAll(p.Provider.AWSProfile, "")
+
 	// Initialize the AWS client session
 	return p.NewSession()
 }
@@ -39,7 +42,6 @@ func (p *Provider) Provision(ctx caddy.Context) error {
 // }
 //
 func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
-	repl := caddy.NewReplacer()
 	for d.Next() {
 		if d.NextArg() {
 			return d.ArgErr()
@@ -48,14 +50,14 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 			switch d.Val() {
 			case "max_retries":
 				if d.NextArg() {
-					p.Provider.MaxRetries, _ = strconv.Atoi(repl.ReplaceAll(d.Val(), ""))
+					p.Provider.MaxRetries, _ = strconv.Atoi(d.Val())
 				}
 				if d.NextArg() {
 					return d.ArgErr()
 				}
 			case "aws_profile":
 				if d.NextArg() {
-					p.Provider.AWSProfile = repl.ReplaceAll(d.Val(), "")
+					p.Provider.AWSProfile = d.Val()
 				}
 				if d.NextArg() {
 					return d.ArgErr()
@@ -69,5 +71,8 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 	return nil
 }
 
-// Interface guard
-var _ caddyfile.Unmarshaler = (*Provider)(nil)
+// Interface guards
+var (
+	_ caddyfile.Unmarshaler = (*Provider)(nil)
+	_ caddy.Provisioner     = (*Provider)(nil)
+)
