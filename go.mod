@@ -4,5 +4,5 @@ go 1.14
 
 require (
 	github.com/caddyserver/caddy/v2 v2.3.0
-	github.com/PhoenixPeca/libdns-route53 v1.2.1
+	github.com/PhoenixPeca/libdns-route53 v1.2.2
 )
