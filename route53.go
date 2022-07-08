@@ -26,19 +26,26 @@ func (Provider) CaddyModule() caddy.ModuleInfo {
 	}
 }
 
-// Provision implements the Provisioner interface to initialize the AWS Client sessions
+// Provision implements the Provisioner interface to initialize the AWS Client
 func (p *Provider) Provision(ctx caddy.Context) error {
 	repl := caddy.NewReplacer()
 	p.Provider.AWSProfile = repl.ReplaceAll(p.Provider.AWSProfile, "")
-
-	// Initialize the AWS client session
-	return p.NewSession()
+	p.Provider.AccessKeyId = repl.ReplaceAll(p.Provider.AccessKeyId, "")
+	p.Provider.SecretAccessKey = repl.ReplaceAll(p.Provider.SecretAccessKey, "")
+	p.Provider.Token = repl.ReplaceAll(p.Provider.Token, "")
+	p.Provider.Region = repl.ReplaceAll(p.Provider.Region, "")
+	return nil
 }
 
 // UnmarshalCaddyfile sets up the DNS provider from Caddyfile tokens. Syntax:
 //
 // route53 {
 //     max_retries <int>
+//     aws_profile <string>
+//     access_key_id <string>
+//     secret_access_key <string>
+//	   token <string>
+//     region <string>
 // }
 //
 func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
@@ -58,6 +65,34 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 			case "aws_profile":
 				if d.NextArg() {
 					p.Provider.AWSProfile = d.Val()
+				}
+				if d.NextArg() {
+					return d.ArgErr()
+				}
+			case "access_key_id":
+				if d.NextArg() {
+					p.Provider.AccessKeyId = d.Val()
+				}
+				if d.NextArg() {
+					return d.ArgErr()
+				}
+			case "secret_access_key":
+				if d.NextArg() {
+					p.Provider.SecretAccessKey = d.Val()
+				}
+				if d.NextArg() {
+					return d.ArgErr()
+				}
+			case "token":
+				if d.NextArg() {
+					p.Provider.Token = d.Val()
+				}
+				if d.NextArg() {
+					return d.ArgErr()
+				}
+			case "region":
+				if d.NextArg() {
+					p.Provider.Region = d.Val()
 				}
 				if d.NextArg() {
 					return d.ArgErr()
