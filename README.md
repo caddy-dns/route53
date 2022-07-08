@@ -20,6 +20,8 @@ To compile this Caddy module, follow the steps describe at the [Caddy Build from
 
 ## Config examples
 
+This module supports all the credential configuration methods described in the [AWS Developer Guide](https://aws.github.io/aws-sdk-go-v2/docs/configuring-sdk/#specifying-credentials), such as `Environment Variables`, `Shared configuration files`, the `AWS Credentials file` located in `.aws/credentials`, and `Static Credentials`. You may also pass in static credentials directly (or via caddy's configuration).
+
 To use this module for the ACME DNS challenge, [configure the ACME issuer in your Caddy JSON](https://caddyserver.com/docs/json/apps/tls/automation/policies/issuer/acme/) like so:
 
 ```json
@@ -29,8 +31,12 @@ To use this module for the ACME DNS challenge, [configure the ACME issuer in you
     "dns": {
       "provider": {
         "name": "route53",
-        "max_retries": 10,
-        "aws_profile": "real-profile"
+        "max_retries": 10, // optional
+        "aws_profile": "real-profile", // optional
+        "region": "us-east-1", // optional
+        "access_key_id": "AKI...", // optional
+        "secret_access_key": "wJa...", // optional
+        "token": "TOKEN...", // optional
       }
     }
   }
@@ -42,8 +48,12 @@ or with the Caddyfile:
 ```
 tls {
   dns route53 {
-    max_retries 10
-    aws_profile "real-profile"
+    max_retries 10 // optional
+    aws_profile "real-profile" // optional
+    access_key_id "AKI..." // optional
+    secret_access_key "wJa..." // optional
+    token "TOKEN..." // optional
+    region "us-east-1" // optional
   }
 }
 ```
