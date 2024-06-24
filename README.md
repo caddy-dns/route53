@@ -1,5 +1,4 @@
-Route53 module for Caddy
-===========================
+# Route53 module for Caddy
 
 This package contains a DNS provider module for [Caddy](https://github.com/caddyserver/caddy). It can be used to manage DNS records in Route53 Hosted zones.
 
@@ -8,7 +7,6 @@ This package contains a DNS provider module for [Caddy](https://github.com/caddy
 ```
 dns.providers.route53
 ```
-
 
 ## Authenticating
 
@@ -36,7 +34,7 @@ To use this module for the ACME DNS challenge, [configure the ACME issuer in you
         "region": "us-east-1", // optional
         "access_key_id": "AKI...", // optional
         "secret_access_key": "wJa...", // optional
-        "token": "TOKEN...", // optional
+        "token": "TOKEN..." // optional
       }
     }
   }
@@ -57,3 +55,34 @@ tls {
   }
 }
 ```
+
+The following IAM policy is a minimal working example to give `libdns` permissions to manage DNS records:
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Action": [
+        "route53:ListResourceRecordSets",
+        "route53:GetChange",
+        "route53:ChangeResourceRecordSets"
+      ],
+      "Resource": [
+        "arn:aws:route53:::hostedzone/ZABCD1EFGHIL",
+        "arn:aws:route53:::change/*"
+      ]
+    },
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Action": ["route53:ListHostedZonesByName", "route53:ListHostedZones"],
+      "Resource": "*"
+    }
+  ]
+}
+```
+
+For more information, refer to [libdns/route53](https://github.com/libdns/route53).
