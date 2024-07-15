@@ -1,6 +1,8 @@
 module github.com/caddy-dns/route53
 
-go 1.19
+go 1.22
+
+toolchain go1.22.1
 
 require (
 	github.com/caddyserver/caddy/v2 v2.7.5
