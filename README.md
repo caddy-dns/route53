@@ -36,7 +36,8 @@ To use this module for the ACME DNS challenge, [configure the ACME issuer in you
         "secret_access_key": "wJa...", // optional
         "session_token": "TOKEN...", // optional
         "max_wait_dur": 60, // propagation wait duration (optional)
-        "wait_for_propagation": false // wait for records to propagate (optional)
+        "wait_for_propagation": false, // wait for records to propagate (optional)
+        "hosted_zone_id": "ZABCD1EFGHIL" // AWS hosted zone ID to update (optional)
       }
     }
   }
@@ -56,6 +57,7 @@ tls {
     region "us-east-1" // optional
     max_wait_dur 60, // propagation wait duration (optional)
     wait_for_propagation false // wait for records to propagate (optional)
+    hosted_zone_id ZABCD1EFGHIL // AWS hosted zone ID to update (optional)
   }
 }
 ```
