@@ -34,7 +34,9 @@ To use this module for the ACME DNS challenge, [configure the ACME issuer in you
         "region": "us-east-1", // optional
         "access_key_id": "AKI...", // optional
         "secret_access_key": "wJa...", // optional
-        "session_token": "TOKEN..." // optional
+        "session_token": "TOKEN...", // optional
+        "max_wait_dur": 60, // propagation wait duration (optional)
+        "wait_for_propagation": false // wait for records to propagate (optional)
       }
     }
   }
@@ -52,6 +54,8 @@ tls {
     secret_access_key "wJa..." // optional
     session_token "TOKEN..." // optional
     region "us-east-1" // optional
+    max_wait_dur 60, // propagation wait duration (optional)
+    wait_for_propagation false // wait for records to propagate (optional)
   }
 }
 ```

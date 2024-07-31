@@ -2,6 +2,7 @@ package route53
 
 import (
 	"strconv"
+	"time"
 
 	"github.com/libdns/route53"
 
@@ -29,25 +30,28 @@ func (Provider) CaddyModule() caddy.ModuleInfo {
 // Provision implements the Provisioner interface to initialize the AWS Client
 func (p *Provider) Provision(ctx caddy.Context) error {
 	repl := caddy.NewReplacer()
+	p.Provider.Profile = repl.ReplaceAll(p.Provider.Profile, "")
 	p.Provider.AWSProfile = repl.ReplaceAll(p.Provider.AWSProfile, "")
 	p.Provider.AccessKeyId = repl.ReplaceAll(p.Provider.AccessKeyId, "")
 	p.Provider.SecretAccessKey = repl.ReplaceAll(p.Provider.SecretAccessKey, "")
 	p.Provider.Token = repl.ReplaceAll(p.Provider.Token, "")
+	p.Provider.SessionToken = repl.ReplaceAll(p.Provider.SessionToken, "")
 	p.Provider.Region = repl.ReplaceAll(p.Provider.Region, "")
 	return nil
 }
 
 // UnmarshalCaddyfile sets up the DNS provider from Caddyfile tokens. Syntax:
 //
-// route53 {
-//     max_retries <int>
-//     aws_profile <string>
-//     access_key_id <string>
-//     secret_access_key <string>
-//	   token <string>
-//     region <string>
-// }
-//
+//	route53 {
+//		region <string>
+//		profile <string>
+//		access_key_id <string>
+//		secret_access_key <string>
+//		session_token <string>
+//		max_retries <int>
+//		max_wait_dur <int>
+//		wait_for_propagation <bool>
+//	}
 func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 	for d.Next() {
 		if d.NextArg() {
@@ -55,9 +59,34 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 		}
 		for nesting := d.Nesting(); d.NextBlock(nesting); {
 			switch d.Val() {
+			case "wait_for_propagation":
+				if d.NextArg() {
+					if wait, err := strconv.ParseBool(d.Val()); err == nil {
+						p.Provider.WaitForPropagation = wait
+					}
+				}
+				if d.NextArg() {
+					return d.ArgErr()
+				}
+			case "max_wait_dur":
+				if d.NextArg() {
+					if dur, err := strconv.ParseInt(d.Val(), 10, 64); err == nil {
+						p.Provider.MaxWaitDur = time.Duration(dur)
+					}
+				}
+				if d.NextArg() {
+					return d.ArgErr()
+				}
 			case "max_retries":
 				if d.NextArg() {
 					p.Provider.MaxRetries, _ = strconv.Atoi(d.Val())
+				}
+				if d.NextArg() {
+					return d.ArgErr()
+				}
+			case "profile":
+				if d.NextArg() {
+					p.Provider.Profile = d.Val()
 				}
 				if d.NextArg() {
 					return d.ArgErr()
@@ -79,6 +108,13 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 			case "secret_access_key":
 				if d.NextArg() {
 					p.Provider.SecretAccessKey = d.Val()
+				}
+				if d.NextArg() {
+					return d.ArgErr()
+				}
+			case "session_token":
+				if d.NextArg() {
+					p.Provider.SessionToken = d.Val()
 				}
 				if d.NextArg() {
 					return d.ArgErr()
