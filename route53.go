@@ -51,6 +51,7 @@ func (p *Provider) Provision(ctx caddy.Context) error {
 //		max_retries <int>
 //		max_wait_dur <int>
 //		wait_for_propagation <bool>
+//		hosted_zone_id <string>
 //	}
 func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 	for d.Next() {
@@ -129,6 +130,13 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 			case "region":
 				if d.NextArg() {
 					p.Provider.Region = d.Val()
+				}
+				if d.NextArg() {
+					return d.ArgErr()
+				}
+			case "hosted_zone_id":
+				if d.NextArg() {
+					p.Provider.HostedZoneID = d.Val()
 				}
 				if d.NextArg() {
 					return d.ArgErr()
