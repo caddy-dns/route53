@@ -30,12 +30,12 @@ To use this module for the ACME DNS challenge, [configure the ACME issuer in you
       "provider": {
         "name": "route53",
         "max_retries": 10, // optional
-        "profile": "real-profile", // optional
-        "region": "us-east-1", // optional
-        "access_key_id": "AKI...", // optional
-        "secret_access_key": "wJa...", // optional
-        "session_token": "TOKEN...", // optional
-        "max_wait_dur": 60, // propagation wait duration (optional)
+        "profile": "real-profile", // defaults to $AWS_PROFILE
+        "region": "us-east-1", // required if $AWS_REGION is not defined
+        "access_key_id": "AKI...", // required if $AWS_ACCESS_KEY_ID is not defined
+        "secret_access_key": "wJa...", // required if $AWS_SECRET_ACCESS_KEY is not defined
+        "session_token": "TOKEN...", // defaults to $AWS_SESSION_TOKEN (optional)
+        "max_wait_dur": 60, // propagation wait duration in seconds (optional)
         "wait_for_propagation": false, // wait for records to propagate (optional)
         "hosted_zone_id": "ZABCD1EFGHIL" // AWS hosted zone ID to update (optional)
       }
@@ -46,15 +46,15 @@ To use this module for the ACME DNS challenge, [configure the ACME issuer in you
 
 or with the Caddyfile:
 
-```
+```caddy
 tls {
   dns route53 {
     max_retries 10 // optional
-    profile "real-profile" // optional
-    access_key_id "AKI..." // optional
-    secret_access_key "wJa..." // optional
-    session_token "TOKEN..." // optional
-    region "us-east-1" // optional
+    profile "real-profile" // defaults to $AWS_PROFILE
+    access_key_id "AKI..." // required if $AWS_ACCESS_KEY_ID is not defined
+    secret_access_key "wJa..." // required if $AWS_SECRET_ACCESS_KEY is not defined
+    session_token "TOKEN..." // defaults to $AWS_SESSION_TOKEN (optional)
+    region "us-east-1" // required if $AWS_REGION is not defined
     max_wait_dur 60, // propagation wait duration (optional)
     wait_for_propagation false // wait for records to propagate (optional)
     hosted_zone_id ZABCD1EFGHIL // AWS hosted zone ID to update (optional)
