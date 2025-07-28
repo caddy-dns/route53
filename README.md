@@ -10,7 +10,7 @@ dns.providers.route53
 
 ## Authenticating
 
-See [the associated README in the libdns package](https://github.com/libdns/route53) for important information about credentials and an IAM policy example.
+See [the associated README in the libdns package](https://github.com/gsmlg-dev/route53) for important information about credentials and an IAM policy example.
 
 ## Building
 
@@ -91,4 +91,4 @@ The following IAM policy is a minimal working example to give `libdns` permissio
 }
 ```
 
-For more information, refer to [libdns/route53](https://github.com/libdns/route53).
+For more information, refer to [libdns/route53](https://github.com/gsmlg-dev/route53).
