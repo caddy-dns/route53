@@ -73,11 +73,11 @@ tls {
     access_key_id "AKI..."      # required unless using EC2 Roles or $AWS_ACCESS_KEY_ID is defined
     secret_access_key "wJa..."  # required unless using EC2 Roles or $AWS_SECRET_ACCESS_KEY is defined
 
-    max_retries 10                # optional, defaults to 5 in libdns 1.6
+    max_retries 5                 # optional, defaults to 5 in libdns/route53 1.6
     profile "real-profile"        # optional, rarely needed, defaults to $AWS_PROFILE
     session_token "TOKEN..."      # optional, rarely needed, defaults to $AWS_SESSION_TOKEN
-    max_wait_dur 60               # optional, defaults to 60 in libdns 1.6
-    wait_for_propagation false    # optional, defaults to false in libdns 1.6
+    max_wait_dur 60               # optional, defaults to 60 in libdns/route53 1.6
+    wait_for_propagation false    # optional, defaults to false in libdns/route53 1.6
     hosted_zone_id ZABCD1EFGHIL   # optional, hosted_zone_id would be discovered from AWS otherwise
   }
 }
