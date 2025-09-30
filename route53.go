@@ -1,6 +1,7 @@
 package route53
 
 import (
+	"os"
 	"strconv"
 	"time"
 
@@ -56,6 +57,11 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 		if d.NextArg() {
 			return d.ArgErr()
 		}
+		p.Provider.Region = os.Getenv("AWS_REGION")
+		if p.Provider.Region == "" {
+			p.Provider.Region = "us-east-1"
+		}
+		p.Provider.WaitForPropagation = true
 		for nesting := d.Nesting(); d.NextBlock(nesting); {
 			switch d.Val() {
 			case "wait_for_propagation":

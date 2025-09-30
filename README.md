@@ -4,6 +4,12 @@ This package contains a DNS provider module for [Caddy](https://github.com/caddy
 It lets Caddy read and manipulate DNS records hosted by Route53, to obtain TLS certificates
 with the [DNS challenge](https://caddyserver.com/docs/automatic-https#dns-challenge).
 
+> [!NOTE]
+> Caddy 2.10 upgraded to libdns 1.0, which breaks compatibility with older DNS providers.
+> To use Caddy 2.10 or newer, install **version 1.6** or later.
+> For earlier Caddy versions, use a corresponding older module release.  
+
+
 ## Caddy module name
 
 ```
@@ -69,16 +75,27 @@ To use this module for the ACME DNS challenge, configure the ACME issuer in your
 ```caddy
 tls {
   dns route53 {
-    region "us-east-1"          # required unless $AWS_REGION is defined, `us-east-1` is the most common value
-    access_key_id "AKI..."      # required unless using EC2 Roles or $AWS_ACCESS_KEY_ID is defined
-    secret_access_key "wJa..."  # required unless using EC2 Roles or $AWS_SECRET_ACCESS_KEY is defined
+    access_key_id "AKI..."        # required unless using EC2 Roles
+                                  #   or $AWS_ACCESS_KEY_ID is defined
 
+    secret_access_key "wJa..."    # required unless using EC2 Roles
+                                  #   or $AWS_SECRET_ACCESS_KEY is defined
+
+    region "us-east-1"            # optional in 1.6
+                                  #   defaults to $AWS_REGION
+                                  #   or us-east-1 (Route53 default)
+
+    wait_for_propagation false    # optional, defaults to true in libdns/route53 1.6
+                                  #   note that this is internal AWS propagation,
+                                  #   not external DNS
+
+    max_wait_dur 60               # optional, defaults to 60 in libdns/route53 1.6
     max_retries 5                 # optional, defaults to 5 in libdns/route53 1.6
     profile "real-profile"        # optional, rarely needed, defaults to $AWS_PROFILE
     session_token "TOKEN..."      # optional, rarely needed, defaults to $AWS_SESSION_TOKEN
-    max_wait_dur 60               # optional, defaults to 60 in libdns/route53 1.6
-    wait_for_propagation false    # optional, defaults to false in libdns/route53 1.6
-    hosted_zone_id ZABCD1EFGHIL   # optional, hosted_zone_id would be discovered from AWS otherwise
+
+    hosted_zone_id ZABCD1EFGHIL   # optional
+                                  # hosted_zone_id would be discovered from AWS otherwise
   }
 }
 ```
@@ -113,8 +130,6 @@ When using AWS EC2 instance roles, a minimal Caddy configuration may look like t
 *.caddyexample.example.com {
   tls {
      dns route53 {
-      # auth comes from EC2 Instance Role
-      region "us-east-1"
      }
   }
 }

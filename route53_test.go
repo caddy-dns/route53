@@ -49,9 +49,10 @@ func TestUnmarshalCaddyfile(t *testing.T) {
 				secret_access_key THIS/IS/A/FAKE/SECRET/KEY/DO/NOT/USE
 			}`,
 			expected: libdns_route53.Provider{
-				Region:          "us-west-2",
-				AccessKeyId:     "AKIATESTINGONLY12345",
-				SecretAccessKey: "THIS/IS/A/FAKE/SECRET/KEY/DO/NOT/USE",
+				Region:             "us-west-2",
+				AccessKeyId:        "AKIATESTINGONLY12345",
+				SecretAccessKey:    "THIS/IS/A/FAKE/SECRET/KEY/DO/NOT/USE",
+				WaitForPropagation: true,
 			},
 		},
 		{
@@ -61,8 +62,9 @@ func TestUnmarshalCaddyfile(t *testing.T) {
 				region eu-west-1
 			}`,
 			expected: libdns_route53.Provider{
-				Profile: "staging",
-				Region:  "eu-west-1",
+				Profile:            "staging",
+				Region:             "eu-west-1",
+				WaitForPropagation: true,
 			},
 		},
 		{
@@ -71,7 +73,9 @@ func TestUnmarshalCaddyfile(t *testing.T) {
 				aws_profile production
 			}`,
 			expected: libdns_route53.Provider{
-				Profile: "production",
+				Profile:            "production",
+				Region:             "us-east-1",
+				WaitForPropagation: true,
 			},
 		},
 		{
@@ -80,7 +84,9 @@ func TestUnmarshalCaddyfile(t *testing.T) {
 				token FAKE_TEST_SESSION_TOKEN_NOT_REAL
 			}`,
 			expected: libdns_route53.Provider{
-				SessionToken: "FAKE_TEST_SESSION_TOKEN_NOT_REAL",
+				SessionToken:       "FAKE_TEST_SESSION_TOKEN_NOT_REAL",
+				Region:             "us-east-1",
+				WaitForPropagation: true,
 			},
 		},
 		{
