@@ -31,10 +31,8 @@ func (Provider) CaddyModule() caddy.ModuleInfo {
 func (p *Provider) Provision(ctx caddy.Context) error {
 	repl := caddy.NewReplacer()
 	p.Provider.Profile = repl.ReplaceAll(p.Provider.Profile, "")
-	p.Provider.AWSProfile = repl.ReplaceAll(p.Provider.AWSProfile, "")
 	p.Provider.AccessKeyId = repl.ReplaceAll(p.Provider.AccessKeyId, "")
 	p.Provider.SecretAccessKey = repl.ReplaceAll(p.Provider.SecretAccessKey, "")
-	p.Provider.Token = repl.ReplaceAll(p.Provider.Token, "")
 	p.Provider.SessionToken = repl.ReplaceAll(p.Provider.SessionToken, "")
 	p.Provider.Region = repl.ReplaceAll(p.Provider.Region, "")
 	return nil
@@ -94,7 +92,7 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 				}
 			case "aws_profile":
 				if d.NextArg() {
-					p.Provider.AWSProfile = d.Val()
+					p.Provider.Profile = d.Val()
 				}
 				if d.NextArg() {
 					return d.ArgErr()
@@ -122,7 +120,7 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 				}
 			case "token":
 				if d.NextArg() {
-					p.Provider.Token = d.Val()
+					p.Provider.SessionToken = d.Val()
 				}
 				if d.NextArg() {
 					return d.ArgErr()
