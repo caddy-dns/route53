@@ -68,7 +68,7 @@ The following AWS IAM policy is a minimal working example to give `libdns` permi
 }
 ```
 
-## Examples
+## Configuration
 
 To use this module for the ACME DNS challenge, configure the ACME issuer in your Caddyfile like so:
 
@@ -100,7 +100,10 @@ tls {
 }
 ```
 
-or with the JSON configuration (see above for comments):
+> [!NOTE]
+> As of 2025, the `region` option is rarely needs to be changed because most AWS Route53 regions use [the same endpoints](https://docs.aws.amazon.com/general/latest/gr/r53.html) as `us-east-1`. It is only required for AWS GovCloud and the China Beijing and Ningxia regions.
+
+### JSON configuration example (see above for comments):
 
 ```json
 {
@@ -129,8 +132,21 @@ When using AWS EC2 instance roles, a minimal Caddy configuration may look like t
 ```caddy
 *.caddyexample.example.com {
   tls {
-     dns route53 {
-     }
+      dns route53 {
+      }
+  }
+}
+```
+
+When using AWS access keys, the configuration becomes:
+
+```caddy
+*.caddyexample.example.com {
+  tls {
+      dns route53 {
+        access_key_id "AKI..."
+        secret_access_key "wJa..."
+      }
   }
 }
 ```
@@ -138,3 +154,4 @@ When using AWS EC2 instance roles, a minimal Caddy configuration may look like t
 ## More information
 
 This module is extremely compact and primarily does configuration - the actual Route53 calls are made by [libdns/route53](https://github.com/libdns/route53). Refer to that project for more information.
+
