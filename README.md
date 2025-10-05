@@ -7,7 +7,7 @@ with the [DNS challenge](https://caddyserver.com/docs/automatic-https#dns-challe
 > [!NOTE]
 > Caddy 2.10 upgraded to libdns 1.0, which breaks compatibility with older DNS providers.
 > To use Caddy 2.10 or newer, install **version 1.6** or later.
-> For earlier Caddy versions, use a corresponding older module release.  
+> For earlier Caddy versions, use a corresponding older module release.
 
 
 ## Caddy module name
@@ -85,11 +85,11 @@ tls {
                                   #   defaults to $AWS_REGION
                                   #   or us-east-1 (Route53 default)
 
-    wait_for_propagation false    # optional, defaults to true in libdns/route53 1.6
+    wait_for_propagation true     # optional, defaults to true in libdns/route53 1.6
                                   #   note that this is internal AWS propagation,
                                   #   not external DNS
 
-    max_wait_dur 60               # optional, defaults to 60 in libdns/route53 1.6
+    max_wait_dur 60               # seconds, optional, defaults to 60 in libdns/route53 1.6
     max_retries 5                 # optional, defaults to 5 in libdns/route53 1.6
     profile "real-profile"        # optional, rarely needed, defaults to $AWS_PROFILE
     session_token "TOKEN..."      # optional, rarely needed, defaults to $AWS_SESSION_TOKEN
@@ -155,3 +155,21 @@ When using AWS access keys, the configuration becomes:
 
 This module is extremely compact and primarily does configuration - the actual Route53 calls are made by [libdns/route53](https://github.com/libdns/route53). Refer to that project for more information.
 
+
+## Contributing
+
+Contributions are welcome! Please ensure that:
+
+1. All code passes `golangci-lint` checks. Run the following before committing:
+   ```bash
+   golangci-lint run ./...
+   ```
+
+2. All tests pass:
+   ```bash
+   go test ./...
+   ```
+
+3. Perform a functional test to verify the module operates correctly. This step is currently manual, as no automated test script exists yet.
+
+Please fix any linter issues before submitting a pull request. The project maintains strict code quality standards to ensure maintainability.

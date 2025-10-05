@@ -28,14 +28,14 @@ func (Provider) CaddyModule() caddy.ModuleInfo {
 	}
 }
 
-// Provision implements the Provisioner interface to initialize the AWS Client
-func (p *Provider) Provision(ctx caddy.Context) error {
+// Provision implements the Provisioner interface to initialize the AWS Client.
+func (p *Provider) Provision(_ caddy.Context) error {
 	repl := caddy.NewReplacer()
-	p.Provider.Profile = repl.ReplaceAll(p.Provider.Profile, "")
-	p.Provider.AccessKeyId = repl.ReplaceAll(p.Provider.AccessKeyId, "")
-	p.Provider.SecretAccessKey = repl.ReplaceAll(p.Provider.SecretAccessKey, "")
-	p.Provider.SessionToken = repl.ReplaceAll(p.Provider.SessionToken, "")
-	p.Provider.Region = repl.ReplaceAll(p.Provider.Region, "")
+	p.Profile = repl.ReplaceAll(p.Profile, "")
+	p.AccessKeyId = repl.ReplaceAll(p.AccessKeyId, "")
+	p.SecretAccessKey = repl.ReplaceAll(p.SecretAccessKey, "")
+	p.SessionToken = repl.ReplaceAll(p.SessionToken, "")
+	p.Region = repl.ReplaceAll(p.Region, "")
 	return nil
 }
 
@@ -76,7 +76,7 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 			case "max_wait_dur":
 				if d.NextArg() {
 					if dur, err := strconv.ParseInt(d.Val(), 10, 64); err == nil {
-						p.Provider.MaxWaitDur = time.Duration(dur)
+						p.Provider.MaxWaitDuration = time.Duration(dur * int64(time.Second))
 					}
 				}
 				if d.NextArg() {
@@ -89,14 +89,7 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 				if d.NextArg() {
 					return d.ArgErr()
 				}
-			case "profile":
-				if d.NextArg() {
-					p.Provider.Profile = d.Val()
-				}
-				if d.NextArg() {
-					return d.ArgErr()
-				}
-			case "aws_profile":
+			case "profile", "aws_profile":
 				if d.NextArg() {
 					p.Provider.Profile = d.Val()
 				}
@@ -117,14 +110,7 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 				if d.NextArg() {
 					return d.ArgErr()
 				}
-			case "session_token":
-				if d.NextArg() {
-					p.Provider.SessionToken = d.Val()
-				}
-				if d.NextArg() {
-					return d.ArgErr()
-				}
-			case "token":
+			case "session_token", "token":
 				if d.NextArg() {
 					p.Provider.SessionToken = d.Val()
 				}
@@ -154,7 +140,7 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 	return nil
 }
 
-// Interface guards
+// Interface guards.
 var (
 	_ caddyfile.Unmarshaler = (*Provider)(nil)
 	_ caddy.Provisioner     = (*Provider)(nil)
