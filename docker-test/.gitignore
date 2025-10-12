@@ -1,0 +1,9 @@
+# Environment file with secrets
+.env
+
+# Caddy data
+data/
+
+# Debug logs (but keep directory)
+debug/*
+!debug/.gitkeep

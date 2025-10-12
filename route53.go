@@ -48,8 +48,9 @@ func (p *Provider) Provision(_ caddy.Context) error {
 //		secret_access_key <string>
 //		session_token <string>
 //		max_retries <int>
-//		max_wait_dur <int>
-//		wait_for_propagation <bool>
+//		route53_max_wait <duration>
+//		wait_for_route53_sync <bool>
+//		skip_route53_sync_on_delete <bool>
 //		hosted_zone_id <string>
 //	}
 func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
@@ -61,22 +62,35 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 		if p.Provider.Region == "" {
 			p.Provider.Region = "us-east-1"
 		}
-		p.Provider.WaitForPropagation = true
+		p.Provider.WaitForRoute53Sync = true
+		p.Provider.SkipRoute53SyncOnDelete = true
 		for nesting := d.Nesting(); d.NextBlock(nesting); {
 			switch d.Val() {
-			case "wait_for_propagation":
+			case "wait_for_route53_sync", "wait_for_propagation": // backward compat
 				if d.NextArg() {
 					if wait, err := strconv.ParseBool(d.Val()); err == nil {
-						p.Provider.WaitForPropagation = wait
+						p.Provider.WaitForRoute53Sync = wait
 					}
 				}
 				if d.NextArg() {
 					return d.ArgErr()
 				}
-			case "max_wait_dur":
+			case "skip_route53_sync_on_delete":
 				if d.NextArg() {
-					if dur, err := strconv.ParseInt(d.Val(), 10, 64); err == nil {
-						p.Provider.MaxWaitDuration = time.Duration(dur * int64(time.Second))
+					if skip, err := strconv.ParseBool(d.Val()); err == nil {
+						p.Provider.SkipRoute53SyncOnDelete = skip
+					}
+				}
+				if d.NextArg() {
+					return d.ArgErr()
+				}
+			case "route53_max_wait", "max_wait_dur": // backward compat
+				if d.NextArg() {
+					if dur, err := time.ParseDuration(d.Val()); err == nil {
+						p.Provider.Route53MaxWait = dur
+					} else if durInt, intErr := strconv.ParseInt(d.Val(), 10, 64); intErr == nil {
+						// backward compat: treat plain integers as seconds
+						p.Provider.Route53MaxWait = time.Duration(durInt * int64(time.Second))
 					}
 				}
 				if d.NextArg() {

@@ -36,8 +36,8 @@ func TestUnmarshalCaddyfile(t *testing.T) {
 				SecretAccessKey:    "FAKE/SECRET/KEY/FOR/TESTING/PURPOSES/ONLY",
 				SessionToken:       "FAKESESSIONTOKEN123456789ABCDEFGHIJKLMNOP",
 				MaxRetries:         10,
-				MaxWaitDuration:    120 * time.Second,
-				WaitForPropagation: true,
+				Route53MaxWait:     120 * time.Second,
+				WaitForRoute53Sync: true,
 				HostedZoneID:       "Z3M3LMPEXAMPLE",
 			},
 		},
@@ -52,7 +52,7 @@ func TestUnmarshalCaddyfile(t *testing.T) {
 				Region:             "us-west-2",
 				AccessKeyId:        "AKIATESTINGONLY12345",
 				SecretAccessKey:    "THIS/IS/A/FAKE/SECRET/KEY/DO/NOT/USE",
-				WaitForPropagation: true,
+				WaitForRoute53Sync: true,
 			},
 		},
 		{
@@ -64,7 +64,7 @@ func TestUnmarshalCaddyfile(t *testing.T) {
 			expected: libdns_route53.Provider{
 				Profile:            "staging",
 				Region:             "eu-west-1",
-				WaitForPropagation: true,
+				WaitForRoute53Sync: true,
 			},
 		},
 		{
@@ -75,7 +75,7 @@ func TestUnmarshalCaddyfile(t *testing.T) {
 			expected: libdns_route53.Provider{
 				Profile:            "production",
 				Region:             "us-east-1",
-				WaitForPropagation: true,
+				WaitForRoute53Sync: true,
 			},
 		},
 		{
@@ -86,7 +86,7 @@ func TestUnmarshalCaddyfile(t *testing.T) {
 			expected: libdns_route53.Provider{
 				SessionToken:       "FAKE_TEST_SESSION_TOKEN_NOT_REAL",
 				Region:             "us-east-1",
-				WaitForPropagation: true,
+				WaitForRoute53Sync: true,
 			},
 		},
 		{
@@ -139,13 +139,13 @@ func TestUnmarshalCaddyfile(t *testing.T) {
 			if p.Provider.MaxRetries != tt.expected.MaxRetries {
 				t.Errorf("MaxRetries = %d, want %d", p.Provider.MaxRetries, tt.expected.MaxRetries)
 			}
-			if p.Provider.MaxWaitDuration != tt.expected.MaxWaitDuration {
-				t.Errorf("MaxWaitDuration = %d, want %d", p.Provider.MaxWaitDuration, tt.expected.MaxWaitDuration)
+			if p.Provider.Route53MaxWait != tt.expected.Route53MaxWait {
+				t.Errorf("Route53MaxWait = %d, want %d", p.Provider.Route53MaxWait, tt.expected.Route53MaxWait)
 			}
-			if p.Provider.WaitForPropagation != tt.expected.WaitForPropagation {
-				t.Errorf("WaitForPropagation = %v, want %v",
-					p.Provider.WaitForPropagation,
-					tt.expected.WaitForPropagation)
+			if p.Provider.WaitForRoute53Sync != tt.expected.WaitForRoute53Sync {
+				t.Errorf("WaitForRoute53Sync = %v, want %v",
+					p.Provider.WaitForRoute53Sync,
+					tt.expected.WaitForRoute53Sync)
 			}
 			if p.Provider.HostedZoneID != tt.expected.HostedZoneID {
 				t.Errorf("HostedZoneID = %q, want %q", p.Provider.HostedZoneID, tt.expected.HostedZoneID)

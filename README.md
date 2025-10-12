@@ -85,12 +85,20 @@ tls {
                                   #   defaults to $AWS_REGION
                                   #   or us-east-1 (Route53 default)
 
-    wait_for_propagation true     # optional, defaults to true in libdns/route53 1.6
-                                  #   note that this is internal AWS propagation,
-                                  #   not external DNS
+    wait_for_route53_sync true    # optional, defaults to true in caddy-dns/route53 1.6+
+                                  #   waits for internal AWS Route53 synchronization,
+                                  #   consider switching off if using lots of zones
 
-    max_wait_dur 60               # seconds, optional, defaults to 60 in libdns/route53 1.6
-    max_retries 5                 # optional, defaults to 5 in libdns/route53 1.6
+    skip_route53_sync_on_delete true
+                                  # optional, defaults to true
+                                  #   if true, skips waiting for Route53 sync on delete
+                                  #   operations for better performance
+
+    route53_max_wait 2m           # optional, defaults to 1m in libdns/route53 1.6+
+                                  #   accepts Go duration format (e.g., "2m", "120s")
+                                  #   or plain integers (seconds) for backward compatibility
+
+    max_retries 5                 # optional, defaults to 5 in libdns/route53 1.6+
     profile "real-profile"        # optional, rarely needed, defaults to $AWS_PROFILE
     session_token "TOKEN..."      # optional, rarely needed, defaults to $AWS_SESSION_TOKEN
 
@@ -101,7 +109,7 @@ tls {
 ```
 
 > [!NOTE]
-> As of 2025, the `region` option is rarely needs to be changed because most AWS Route53 regions use [the same endpoints](https://docs.aws.amazon.com/general/latest/gr/r53.html) as `us-east-1`. It is only required for AWS GovCloud and the China Beijing and Ningxia regions.
+> As of 2025, the `region` option rarely needs to be changed because most AWS Route53 regions use [the same endpoints](https://docs.aws.amazon.com/general/latest/gr/r53.html) as `us-east-1`. It is only required for AWS GovCloud and the China Beijing and Ningxia regions.
 
 ### JSON configuration example (see above for comments):
 
@@ -118,14 +126,22 @@ tls {
         "max_retries": 10,
         "profile": "real-profile",
         "session_token": "TOKEN...",
-        "max_wait_dur": 60,
-        "wait_for_propagation": false,
+        "route53_max_wait": "2m",
+        "wait_for_route53_sync": false,
+        "skip_route53_sync_on_delete": false,
         "hosted_zone_id": "ZABCD1EFGHIL"
       }
     }
   }
 }
 ```
+
+> [!NOTE]
+> **Backward Compatibility**: Old field names are still supported in Caddyfile for backward compatibility:
+> - `wait_for_propagation` → use `wait_for_route53_sync`
+> - `max_wait_dur` → use `route53_max_wait`
+> - `aws_profile` → use `profile`
+> - `token` → use `session_token`
 
 When using AWS EC2 instance roles, a minimal Caddy configuration may look like this:
 
@@ -170,6 +186,6 @@ Contributions are welcome! Please ensure that:
    go test ./...
    ```
 
-3. Perform a functional test to verify the module operates correctly. This step is currently manual, as no automated test script exists yet.
+3. Perform a functional test to verify the module operates correctly. An automated e2e test is available in `docker-test/` that builds Caddy in a Docker container and requests real TLS certificates from Let's Encrypt staging using Route53. See [docker-test/README.md](docker-test/README.md) for details.
 
 Please fix any linter issues before submitting a pull request. The project maintains strict code quality standards to ensure maintainability.

@@ -1,0 +1,23 @@
+{
+    debug
+    log {
+        level DEBUG
+        format console {
+            level_format upper
+        }
+        output file /debug/caddy.log
+    }
+    acme_ca https://acme-staging-v02.api.letsencrypt.org/directory
+}
+
+caddydns-wildtest.${TEST_ZONE}, *.caddydns-wildtest.${TEST_ZONE} {
+    tls {
+        dns route53 {
+            access_key_id ${AWS_ACCESS_KEY_ID}
+            secret_access_key ${AWS_SECRET_ACCESS_KEY}
+            wait_for_route53_sync true
+        }
+    }
+
+    respond "Hello from {host}!"
+}

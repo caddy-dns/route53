@@ -1,0 +1,30 @@
+# Docker build context for caddy-dns-route53
+# Build context is this directory (caddy-dns-route53/)
+
+# Ignore most of docker-test directory
+docker-test/*
+# But allow the files we need for the image
+!docker-test/inside-docker.sh
+!docker-test/Caddyfile.template
+!docker-test/Dockerfile
+
+# Git
+.git
+.gitignore
+
+# IDE
+.vscode
+.idea
+
+# Build artifacts
+*.o
+*.a
+*.so
+caddy
+
+# Test binaries
+*.test
+
+# Go workspace
+go.work
+go.work.sum
