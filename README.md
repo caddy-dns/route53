@@ -68,6 +68,47 @@ The following AWS IAM policy is a minimal working example to give `libdns` permi
 }
 ```
 
+Here is an example IAM policy that restricts `libdns` record management permissions to only the `_acme-challenge` `TXT` records in the specified hosted zone, which is sufficient for Caddy's automatic HTTPS functionality. (Note the placeholders for your hosted zone ID!):
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "route53:ListHostedZonesByName",
+        "route53:ListHostedZones"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+      "Action": "route53:ListResourceRecordSets",
+      "Effect": "Allow",
+      "Resource": "arn:aws:route53:::hostedzone/{{Replace with your hosted zone ID}}"
+    },
+    {
+      "Action": "route53:GetChange",
+      "Effect": "Allow",
+      "Resource": "arn:aws:route53:::change/*"
+    },
+    {
+      "Action": "route53:ChangeResourceRecordSets",
+      "Condition": {
+        "ForAllValues:StringEquals": {
+          "route53:ChangeResourceRecordSetsRecordTypes": "TXT"
+        },
+        "ForAllValues:StringLike": {
+          "route53:ChangeResourceRecordSetsNormalizedRecordNames": "_acme-challenge.*"
+        }
+      },
+      "Effect": "Allow",
+      "Resource": "arn:aws:route53:::hostedzone/{{Replace with your hosted zone ID}}"
+    }
+  ]
+}
+```
+
 ## Configuration
 
 To use this module for the ACME DNS challenge, configure the ACME issuer in your Caddyfile like so:
