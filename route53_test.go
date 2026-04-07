@@ -1,11 +1,18 @@
 package route53_test
 
 import (
+	"context"
+	"fmt"
+	"io"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/caddy-dns/route53"
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
+	"github.com/libdns/libdns"
 	libdns_route53 "github.com/libdns/route53"
 )
 
@@ -151,5 +158,58 @@ func TestUnmarshalCaddyfile(t *testing.T) {
 				t.Errorf("HostedZoneID = %q, want %q", p.Provider.HostedZoneID, tt.expected.HostedZoneID)
 			}
 		})
+	}
+}
+
+// TestAppendRecordsUsesUpsert verifies that AppendRecords sends an UPSERT
+// (not CREATE) to Route53, preventing "already exists" errors (issue #67).
+func TestAppendRecordsUsesUpsert(t *testing.T) {
+	var capturedBody string
+
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		body, _ := io.ReadAll(r.Body)
+		capturedBody = string(body)
+
+		w.Header().Set("Content-Type", "application/xml")
+		fmt.Fprint(w, `<?xml version="1.0"?>
+<ChangeResourceRecordSetsResponse xmlns="https://route53.amazonaws.com/doc/2013-04-01/">
+  <ChangeInfo>
+    <Id>/change/C1PA6795UKMFR9</Id>
+    <Status>INSYNC</Status>
+    <SubmittedAt>2024-01-01T00:00:00.000Z</SubmittedAt>
+  </ChangeInfo>
+</ChangeResourceRecordSetsResponse>`)
+	}))
+	defer server.Close()
+
+	t.Setenv("AWS_ENDPOINT_URL", server.URL)
+
+	p := &route53.Provider{Provider: &libdns_route53.Provider{
+		HostedZoneID:    "ZFAKEZONE",
+		AccessKeyId:     "AKIAFAKEKEY123456789",
+		SecretAccessKey: "fakesecretkey1234567890abcdefghijklmnop",
+		Region:          "us-east-1",
+	}}
+
+	record, err := libdns.RR{
+		Name: "_acme-challenge",
+		Type: "TXT",
+		Data: "test-validation-token",
+		TTL:  300 * time.Second,
+	}.Parse()
+	if err != nil {
+		t.Fatalf("failed to parse record: %v", err)
+	}
+
+	_, err = p.AppendRecords(context.Background(), "example.com.", []libdns.Record{record})
+	if err != nil {
+		t.Fatalf("AppendRecords() error = %v", err)
+	}
+
+	if !strings.Contains(capturedBody, "UPSERT") {
+		t.Errorf("expected UPSERT action in request body, got:\n%s", capturedBody)
+	}
+	if strings.Contains(capturedBody, "CREATE") {
+		t.Errorf("expected no CREATE action in request body, got:\n%s", capturedBody)
 	}
 }
