@@ -1,10 +1,12 @@
 package route53
 
 import (
+	"context"
 	"os"
 	"strconv"
 	"time"
 
+	"github.com/libdns/libdns"
 	"github.com/libdns/route53"
 
 	"github.com/caddyserver/caddy/v2"
@@ -154,8 +156,15 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 	return nil
 }
 
+// AppendRecords adds records to the zone using UPSERT instead of CREATE
+// to avoid failures when a record already exists (issue #67).
+func (p *Provider) AppendRecords(ctx context.Context, zone string, records []libdns.Record) ([]libdns.Record, error) {
+	return p.Provider.SetRecords(ctx, zone, records)
+}
+
 // Interface guards.
 var (
 	_ caddyfile.Unmarshaler = (*Provider)(nil)
 	_ caddy.Provisioner     = (*Provider)(nil)
+	_ libdns.RecordAppender = (*Provider)(nil)
 )
