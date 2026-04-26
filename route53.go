@@ -1,18 +1,28 @@
 package route53
 
 import (
+	"log/slog"
 	"os"
 	"strconv"
 	"time"
 
 	"github.com/libdns/route53"
+	"go.uber.org/zap/exp/zapslog"
 
 	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/caddyconfig/caddyfile"
 )
 
 // Provider wraps the provider implementation as a Caddy module.
-type Provider struct{ *route53.Provider }
+type Provider struct {
+	*route53.Provider
+
+	// DebugLogging forwards structured events from libdns/route53 (zone
+	// resolution, change submission, sync waits) to Caddy's logger. The
+	// underlying library emits at Debug level except for ambiguous-zone
+	// warnings, so set Caddy's log level to debug to actually see them.
+	DebugLogging bool `json:"debug_logging,omitempty"`
+}
 
 func init() {
 	caddy.RegisterModule(Provider{})
@@ -23,19 +33,25 @@ func (Provider) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
 		ID: "dns.providers.route53",
 		New: func() caddy.Module {
-			return &Provider{new(route53.Provider)}
+			return &Provider{Provider: new(route53.Provider)}
 		},
 	}
 }
 
 // Provision implements the Provisioner interface to initialize the AWS Client.
-func (p *Provider) Provision(_ caddy.Context) error {
+func (p *Provider) Provision(ctx caddy.Context) error {
 	repl := caddy.NewReplacer()
 	p.Profile = repl.ReplaceAll(p.Profile, "")
 	p.AccessKeyId = repl.ReplaceAll(p.AccessKeyId, "")
 	p.SecretAccessKey = repl.ReplaceAll(p.SecretAccessKey, "")
 	p.SessionToken = repl.ReplaceAll(p.SessionToken, "")
 	p.Region = repl.ReplaceAll(p.Region, "")
+	if p.DebugLogging {
+		p.Provider.Logger = slog.New(zapslog.NewHandler(
+			ctx.Logger().Core(),
+			zapslog.WithName(string(p.CaddyModule().ID)),
+		))
+	}
 	return nil
 }
 
@@ -52,6 +68,7 @@ func (p *Provider) Provision(_ caddy.Context) error {
 //		wait_for_route53_sync <bool>
 //		skip_route53_sync_on_delete <bool>
 //		hosted_zone_id <string>
+//		debug_logging <bool>
 //	}
 func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 	for d.Next() {
@@ -141,6 +158,15 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 			case "hosted_zone_id":
 				if d.NextArg() {
 					p.Provider.HostedZoneID = d.Val()
+				}
+				if d.NextArg() {
+					return d.ArgErr()
+				}
+			case "debug_logging":
+				if d.NextArg() {
+					if v, err := strconv.ParseBool(d.Val()); err == nil {
+						p.DebugLogging = v
+					}
 				}
 				if d.NextArg() {
 					return d.ArgErr()

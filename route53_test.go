@@ -11,10 +11,11 @@ import (
 
 func TestUnmarshalCaddyfile(t *testing.T) {
 	tests := []struct {
-		name      string
-		caddyfile string
-		expected  libdns_route53.Provider
-		wantErr   bool
+		name         string
+		caddyfile    string
+		expected     libdns_route53.Provider
+		debugLogging bool
+		wantErr      bool
 	}{
 		{
 			name: "full configuration",
@@ -90,6 +91,17 @@ func TestUnmarshalCaddyfile(t *testing.T) {
 			},
 		},
 		{
+			name: "debug_logging enabled",
+			caddyfile: `route53 {
+				debug_logging true
+			}`,
+			expected: libdns_route53.Provider{
+				Region:             "us-east-1",
+				WaitForRoute53Sync: true,
+			},
+			debugLogging: true,
+		},
+		{
 			name: "error on unknown directive",
 			caddyfile: `route53 {
 				unknown_directive value
@@ -150,6 +162,9 @@ func TestUnmarshalCaddyfile(t *testing.T) {
 			}
 			if p.Provider.HostedZoneID != tt.expected.HostedZoneID {
 				t.Errorf("HostedZoneID = %q, want %q", p.Provider.HostedZoneID, tt.expected.HostedZoneID)
+			}
+			if p.DebugLogging != tt.debugLogging {
+				t.Errorf("DebugLogging = %v, want %v", p.DebugLogging, tt.debugLogging)
 			}
 		})
 	}

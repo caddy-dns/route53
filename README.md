@@ -104,6 +104,12 @@ tls {
 
     hosted_zone_id ZABCD1EFGHIL   # optional
                                   # hosted_zone_id would be discovered from AWS otherwise
+
+    debug_logging true            # optional, defaults to false
+                                  #   forwards libdns/route53 events (zone resolution,
+                                  #   change submission, sync waits) to Caddy's logger.
+                                  #   most events are at Debug level — set Caddy's log
+                                  #   level to debug to actually see them.
   }
 }
 ```
@@ -129,7 +135,8 @@ tls {
         "route53_max_wait": "2m",
         "wait_for_route53_sync": false,
         "skip_route53_sync_on_delete": false,
-        "hosted_zone_id": "ZABCD1EFGHIL"
+        "hosted_zone_id": "ZABCD1EFGHIL",
+        "debug_logging": true
       }
     }
   }
