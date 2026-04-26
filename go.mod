@@ -4,7 +4,8 @@ go 1.25.0
 
 require (
 	github.com/caddyserver/caddy/v2 v2.10.2
-	github.com/libdns/route53 v1.6.0
+	github.com/libdns/route53 v1.6.2
+	go.uber.org/zap/exp v0.3.0
 )
 
 require (
@@ -43,7 +44,6 @@ require (
 	go.uber.org/mock v0.5.2 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.27.0 // indirect
-	go.uber.org/zap/exp v0.3.0 // indirect
 	golang.org/x/crypto v0.40.0 // indirect
 	golang.org/x/mod v0.25.0 // indirect
 	golang.org/x/net v0.42.0 // indirect
