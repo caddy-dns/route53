@@ -1,4 +1,4 @@
-FROM caddy:2.10.2-builder-alpine
+FROM caddy:2.11.2-builder-alpine
 
 # NOTE: Build context is the parent directory (caddy-dns-route53/), not docker-test/
 # This is set via: docker build -f docker-test/Dockerfile <parent-dir>
