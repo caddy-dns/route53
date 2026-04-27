@@ -126,9 +126,12 @@ tls {
                                   #   defaults to $AWS_REGION
                                   #   or us-east-1 (Route53 default)
 
-    wait_for_route53_sync true    # optional, defaults to true in caddy-dns/route53 1.6+
-                                  #   waits for internal AWS Route53 synchronization,
-                                  #   consider switching off if using lots of zones
+    wait_for_route53_sync false   # optional, defaults to false (since 1.6.2)
+                                  #   when true, waits for internal AWS Route53
+                                  #   synchronization before returning. certmagic
+                                  #   has its own DNS propagation polling, so the
+                                  #   extra wait is usually redundant and slows
+                                  #   issuance on hosts with many vhosts.
 
     skip_route53_sync_on_delete true
                                   # optional, defaults to true

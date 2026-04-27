@@ -79,7 +79,7 @@ func (p *Provider) UnmarshalCaddyfile(d *caddyfile.Dispenser) error {
 		if p.Provider.Region == "" {
 			p.Provider.Region = "us-east-1"
 		}
-		p.Provider.WaitForRoute53Sync = true
+		p.Provider.WaitForRoute53Sync = false
 		p.Provider.SkipRoute53SyncOnDelete = true
 		for nesting := d.Nesting(); d.NextBlock(nesting); {
 			switch d.Val() {
