@@ -19,7 +19,7 @@ updates:
       prefix: "chore"
       include: "scope"
   - package-ecosystem: "docker"
-    directory: "/"
+    directory: "/docker-test"
     schedule:
       interval: "daily"
     labels:
