@@ -9,6 +9,11 @@ updates:
     commit-message:
       prefix: "chore"
       include: "scope"
+    ignore:
+      # We intentionally pin to the minimum required Caddy to stay compatible
+      # with as many Caddy versions as possible. Users build with their own
+      # Caddy version via xcaddy; bumping the floor here would shrink that range.
+      - dependency-name: "github.com/caddyserver/caddy/v2"
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
